@@ -1,35 +1,85 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { createTheme, MantineProvider } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
+import { useEffect } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+
+import "@mantine/core/styles.css";
+import "@mantine/notifications/styles.css";
+
+import "@mantine/dates/styles.css";
+import "./App.css";
+import { APP_ROUTES } from "./constants";
+import { useAppDispatch, useAppSelector } from "./hooks/useAppRedux";
+import AuthPage from "./pages/AuthPage";
+import StudentRoute from "./routes/StudentRoute";
+import TeacherRoute from "./routes/TeacherRoute";
+import { fetchCurrentUser } from "./store/authSlice";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const theme = createTheme({
+    primaryColor: "blue",
+    primaryShade: 5,
+    colors: {
+      blue: [
+        "#f0faff",
+        "#e0f5fe",
+        "#bae8fd",
+        "#7dd5fc",
+        "#38bcf8",
+        "#0ea5e9",
+        "#028ac7",
+        "#0370a1",
+        "#075e85",
+        "#0c506e",
+        "#083549",
+      ],
+    },
+    fontFamily: "Inter var, ui-sans-serif, system-ui, sans-serif",
+    defaultRadius: "md",
+    components: {
+      Input: {
+        styles: {
+          root: { "&:focus": { borderColor: "#0ea5e9" } },
+        },
+      },
+      Button: {
+        defaultProps: {
+          color: "#0ea5e9",
+        },
+      },
+    },
+  });
+
+  const { user, isAuthenticated } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (!user && !isAuthenticated) {
+      dispatch(fetchCurrentUser());
+    }
+  }, [user]);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <MantineProvider theme={theme}>
+      <Notifications position="bottom-right" zIndex={1000} />
+      <BrowserRouter>
+        <div className="min-h-screen flex flex-col">
+          <main className="flex-1">
+            <Routes>
+              <Route path={APP_ROUTES.LOGIN} element={<AuthPage />} />
+              <Route path={APP_ROUTES.REGISTER} element={<AuthPage />} />
+
+              {user?.role === "teacher" ? (
+                <Route path="/*" element={<TeacherRoute />} />
+              ) : (
+                <Route path="/*" element={<StudentRoute />} />
+              )}
+            </Routes>
+          </main>
+        </div>
+      </BrowserRouter>
+    </MantineProvider>
+  );
 }
 
-export default App
+export default App;
