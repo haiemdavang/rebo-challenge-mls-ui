@@ -1,11 +1,12 @@
 import { API_ENDPOINTS } from '../constants';
 import type { ApiResponse, PaginatedResponse } from '../types/ApiResponse';
+import type { ApiDataWrapper } from '../types/CommonType';
 import type {
-    CourseDetailDto,
-    CourseDto,
-    CourseFilterParams,
-    CreateCourseRequest,
-    UpdateCourseRequest
+  CourseDetailDto,
+  CourseDto,
+  CourseFilterParams,
+  CreateCourseRequest,
+  UpdateCourseRequest
 } from '../types/CourseType';
 import type { BaseUserDto } from '../types/UserType';
 import { axiosInstance } from './AxiosInstant';
@@ -51,12 +52,11 @@ const enrollCourse = async (courseId: number, userId: number): Promise<ApiRespon
 
 const getCourseStudents = async (courseId: number): Promise<BaseUserDto[]> => {
   try {
-    const response = await axiosInstance.get<BaseUserDto[]>(
+    const response = await axiosInstance.get<ApiDataWrapper<BaseUserDto[]>>(
       API_ENDPOINTS.COURSES.STUDENTS(courseId)
     );
-    return Array.isArray(response.data) ? response.data : [];
+    return Array.isArray(response.data.data) ? response.data.data : [];
   } catch (error) {
-    console.error('Error fetching course students:', error);
     return [];
   }
 };
