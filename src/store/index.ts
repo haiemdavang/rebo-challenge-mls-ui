@@ -4,6 +4,7 @@
 // import courseReducer from "./courseSlice";
 // import moduleReducer from "./moduleSlice";
 // import studentReducer from "./studentSlice";
+// import userReducer from "./userSlice";
 
 // export const store = configureStore({
 //   reducer: {
@@ -12,6 +13,7 @@
 //     courses: courseReducer,
 //     modules: moduleReducer,
 //     students: studentReducer,
+//     user: userReducer,
 //   },
 // });
 

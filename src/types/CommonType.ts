@@ -10,3 +10,8 @@ export interface ErrorResponseDto {
   code?: string;
   details?: any;
 }
+
+
+export interface ApiDataWrapper<T> {
+    data: T;
+}
